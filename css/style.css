@@ -1,0 +1,263 @@
+/* Gaya Umum */
+body {
+    font-family: 'Poppins', sans-serif;
+    padding: 20px;
+    height: 100vh;
+    margin: 0;
+}
+
+/* Container Utama */
+.container {
+    width: 80%;
+    display: flex;
+    gap: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+/* Bagian Form Input */
+.task-form {
+    width: 30%;
+    padding: 20px;
+    background-color: #ECECEC;
+    border-radius: 10px;
+    height: 600px;
+}
+
+.btn-submit {
+    background-color: #3D8D7A;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 2rem;
+    width: 100%;
+}
+
+.top-text {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #3D8D7A;
+}
+
+.date-today {
+    color: #fff;
+    font-weight: 600;
+    font-size: 20px;
+}
+
+/* Bagian Daftar Task */
+.task-list {
+    width: 70%;
+    padding: 20px;
+    background-color: #A5D8C7;
+    border-radius: 10px;
+    height: 600px;
+}
+
+/* Setiap item dalam daftar task */
+.task-icon {
+    font-size: 20px;
+    cursor: pointer;
+    transition: color 0.3s ease-in-out;
+}
+
+.task-icon.check {
+    color: green;
+}
+
+.task-icon.uncheck {
+    color: gray;
+}
+
+/* Struktur Task - Rapi & Sejajar */
+.task-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    padding: 10px 15px;
+    /* Tambah padding agar tidak terlalu rapat */
+    border-radius: 8px;
+    margin-bottom: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    /* Pastikan padding tidak mengganggu lebar */
+}
+
+/* Kolom Kiri: Nama & Status */
+.task-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    /* Supaya lebar kiri dan kanan bisa seimbang */
+}
+
+/* Kolom Kanan: Tanggal & Priority */
+.task-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    /* Jarak antar elemen */
+}
+
+/* Task Name */
+.task-name {
+    font-size: 16px;
+    font-weight: 500;
+    flex: 1;
+    /* Menggunakan flex agar teks tidak mendesak elemen lain */
+}
+
+/* Warna Tanggal */
+.task-date {
+    padding: 6px 12px;
+    border-radius: 5px;
+    font-size: 14px;
+    min-width: 100px;
+    /* Biar semua tanggal ukurannya sama */
+    text-align: center;
+}
+
+/* Warna Priority */
+.task-priority {
+    font-size: 14px;
+    font-weight: bold;
+    padding: 6px 12px;
+    border-radius: 5px;
+    min-width: 80px;
+    /* Ukuran sama untuk semua priority */
+    text-align: center;
+}
+
+/* Warna Berdasarkan Level */
+.priority-1 {
+    background-color: green;
+    color: white;
+}
+
+.priority-2 {
+    background-color: yellow;
+    color: black;
+}
+
+.priority-3 {
+    background-color: red;
+    color: white;
+}
+
+/* Tombol Hapus */
+.trash-icon {
+    color: red;
+    cursor: pointer;
+    font-size: 18px;
+    /* Sesuaikan ukuran agar proporsional */
+}
+
+/* Hover Efek */
+.task-item:hover {
+    background-color: #f0f0f0;
+}
+
+/* Tombol hapus */
+.trash-icon {
+    color: red;
+    cursor: pointer;
+}
+
+.search-filter-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    border-radius: 8px;
+}
+
+.search-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-box,
+.filter-box {
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: all 0.3s ease-in-out;
+    border: none;
+}
+
+.search-btn {
+    background-color: #3D8D7A;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.search-btn:hover {
+    background-color: #2E6D5F;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 5rem;
+}
+
+.page-link {
+    background: #3D8D7A;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.page-link:hover {
+    background: #2E6D5F;
+}
+
+.page-link.active {
+    background: #3D8D7A;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+}
+
+@media (max-width: 768px) {
+    .search-filter-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .search-box,
+    .filter-box {
+        width: 100%;
+    }
+}
+
+/* Responsif */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        width: 90%;
+    }
+
+    .task-form,
+    .task-list {
+        width: 100%;
+    }
+}
