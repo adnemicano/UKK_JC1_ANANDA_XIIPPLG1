@@ -1,6 +1,7 @@
 <?php
 $koneksi = mysqli_connect('localhost', 'root', '', 'ukk2025_todolist');
 
+
 $search = isset($_GET['search']) ? $_GET['search'] : ''; // ✅ Mencegah Undefined Variable Warning
 
 // Konfigurasi Pagination
@@ -53,6 +54,37 @@ if (isset($_GET['toggle'])) {
     echo "<script>window.location.href='index.php';</script>";
 }
 
+// Edit task - Tampilkan form
+$edit_id = isset($_GET['edit']) ? $_GET['edit'] : 0;
+$task_to_edit = null;
+
+if ($edit_id > 0) {
+    $result = mysqli_query($koneksi, "SELECT * FROM task WHERE id = '$edit_id'");
+    $task_to_edit = mysqli_fetch_assoc($result);
+}
+
+// Edit task - Proses update
+if (isset($_POST['edit_task'])) {
+    $id = $_POST['id'];
+    $task = $_POST['task'];
+    $priority = $_POST['priority'];
+    $due_date = $_POST['due_date'];
+    $today = date("Y-m-d");
+
+    if (!empty($task) && !empty($priority) && !empty($due_date)) {
+        if ($due_date < $today) {
+            echo "<script>alert('Tanggal tidak boleh sebelum hari ini!'); window.location.href='index.php';</script>";
+            exit();
+        }
+
+        $query = "UPDATE task SET task='$task', priority='$priority', due_date='$due_date' WHERE id='$id'";
+        mysqli_query($koneksi, $query);
+        echo "<script>alert('Task berhasil diupdate'); window.location.href='index.php';</script>";
+    } else {
+        echo "<script>alert('Task gagal diupdate'); window.location.href='index.php';</script>";
+    }
+}
+
 
 // Hapus task
 if (isset($_GET['delete'])) {
@@ -63,16 +95,17 @@ if (isset($_GET['delete'])) {
 
 // Filter & Search Query
 $search = isset($_GET['search']) ? $_GET['search'] : '';
-$filter = isset($_GET['filter']) ? $_GET['filter'] : 'default';
+// Ubah bagian filter & search query
+$filter = isset($_GET['filter']) ? $_GET['filter'] : 'priority'; // Ubah default dari 'default' menjadi 'priority'
 
 $query = "SELECT * FROM task WHERE task LIKE '%$search%'";
 
 if ($filter == 'date') {
     $query .= " ORDER BY due_date ASC";
 } elseif ($filter == 'priority') {
-    $query .= " ORDER BY priority DESC";
+    $query .= " ORDER BY priority DESC"; // Priority high to low
 } else {
-    $query .= " ORDER BY status ASC";
+    $query .= " ORDER BY status ASC, priority DESC"; // Tambahkan priority DESC untuk default sorting
 }
 
 $query .= " LIMIT $start, $limit"; // Tambahkan LIMIT untuk pagination
@@ -100,6 +133,31 @@ $result = mysqli_query($koneksi, $query);
 
 <body>
     <div class="container">
+
+        <!-- Form Edit (akan muncul hanya saat mode edit) -->
+        <?php if ($task_to_edit): ?>
+            <div class="task-form edit-mode">
+                <p class="top-text">Edit Task</p>
+                <form action="" method="post" class="form">
+                    <input type="hidden" name="id" value="<?php echo $task_to_edit['id']; ?>">
+
+                    <label class="form-label">Task</label>
+                    <input type="text" name="task" class="form-control" value="<?php echo htmlspecialchars($task_to_edit['task']); ?>" required>
+
+                    <label class="form-label">Priority</label>
+                    <select name="priority" class="form-control" required>
+                        <option value="1" <?php echo $task_to_edit['priority'] == 1 ? 'selected' : ''; ?>>Low</option>
+                        <option value="2" <?php echo $task_to_edit['priority'] == 2 ? 'selected' : ''; ?>>Medium</option>
+                        <option value="3" <?php echo $task_to_edit['priority'] == 3 ? 'selected' : ''; ?>>High</option>
+                    </select>
+
+                    <label class="form-label">Tanggal</label>
+                    <input type="date" name="due_date" class="form-control" value="<?php echo $task_to_edit['due_date']; ?>" required>
+
+                    <button class="btn-submit" name="edit_task">Update Task</button>
+                </form>
+            </div>
+        <?php endif; ?>
         <!-- Form Input -->
         <div class="task-form">
             <p class="top-text">Add a list</p>
@@ -172,6 +230,10 @@ $result = mysqli_query($koneksi, $query);
                             <a href="?delete=<?php echo $row['id']; ?>">
                                 <i class="fas fa-trash trash-icon"></i>
                             </a>
+
+                            <a href="?edit=<?php echo $row['id']; ?>" class="edit-btn">
+                                <i class="fas fa-edit edit-icon"></i>
+                            </a>
                         </div>
 
                     </div>
@@ -198,12 +260,61 @@ $result = mysqli_query($koneksi, $query);
         </div>
     </div>
 
+    <!-- Modal Edit -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Edit Task</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="" method="post">
+                    <div class="modal-body">
+                        <input type="hidden" name="id" id="edit_id">
+                        <div class="mb-3">
+                            <label class="form-label">Task</label>
+                            <input type="text" name="task" id="edit_task" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Priority</label>
+                            <select name="priority" id="edit_priority" class="form-control" required>
+                                <option value="1">Low</option>
+                                <option value="2">Medium</option>
+                                <option value="3">High</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tanggal</label>
+                            <input type="date" name="due_date" id="edit_due_date" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" name="edit_task" class="btn btn-primary">Save changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 
 
 
     <script>
         let today = new Date().toISOString().split('T')[0];
         document.getElementById("due_date").setAttribute("min", today);
+    </script>
+
+    <script>
+        // Set minimum date untuk input tanggal
+        document.addEventListener('DOMContentLoaded', function() {
+            let today = new Date().toISOString().split('T')[0];
+            let dueDateInputs = document.querySelectorAll('input[type="date"]');
+
+            dueDateInputs.forEach(input => {
+                input.setAttribute('min', today);
+            });
+        });
     </script>
 </body>
 
