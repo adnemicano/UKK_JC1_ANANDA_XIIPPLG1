@@ -151,8 +151,19 @@ $result = mysqli_query($koneksi, $query);
                         </div>
 
                         <!-- Kanan: Tanggal & Priority -->
+                        <!-- Kanan: Tanggal & Priority -->
                         <div class="task-right">
-                            <span class="task-date"><?php echo date("d M Y", strtotime($row['due_date'])); ?></span>
+                            <?php
+                            $due_date = strtotime($row['due_date']);
+                            $today = strtotime(date("Y-m-d"));
+                            $is_late = $due_date < $today;
+                            ?>
+                            <span class="task-date">
+                                <?php echo date("d M Y", $due_date); ?>
+                                <?php if ($is_late && $row['status'] == 0) { ?>
+                                    <span class="text-danger">(Sudah Terlewat)</span>
+                                <?php } ?>
+                            </span>
                             <span class="task-priority priority-<?php echo strtolower($row['priority']); ?>">
                                 <?php
                                 echo ($row['priority'] == 1) ? 'Low' : (($row['priority'] == 2) ? 'Medium' : 'High');
@@ -162,6 +173,7 @@ $result = mysqli_query($koneksi, $query);
                                 <i class="fas fa-trash trash-icon"></i>
                             </a>
                         </div>
+
                     </div>
 
 
